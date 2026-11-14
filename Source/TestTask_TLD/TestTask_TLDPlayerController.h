@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UUserWidget;
+class UAC_CameraManager;
 
 /**
  *  Basic PlayerController class for a third person game
@@ -19,6 +20,11 @@ class ATestTask_TLDPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 protected:
+
+	ATestTask_TLDPlayerController();
+
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TObjectPtr<UAC_CameraManager> CameraManager;
 
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")
@@ -49,4 +55,7 @@ protected:
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
 
+public: 
+
+	TObjectPtr<UAC_CameraManager> GetCameraManager() const { return CameraManager; }
 };

@@ -7,7 +7,13 @@
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
 #include "TestTask_TLD.h"
+#include "ActorComponents/AC_CameraManager.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+
+ATestTask_TLDPlayerController::ATestTask_TLDPlayerController()
+{
+	CameraManager = CreateDefaultSubobject<UAC_CameraManager>(TEXT("CameraManager"));
+}
 
 void ATestTask_TLDPlayerController::BeginPlay()
 {
