@@ -3,7 +3,9 @@
 
 #include "Actors/BP_CameraTrigger.h"
 #include "Components/BoxComponent.h"
+#include "Components/SceneComponent.h"
 #include "GameFramework/Character.h"
+#include "Core/AIControllerNPC.h"
 #include "TestTask_TLDPlayerController.h"
 #include "ActorComponents/AC_CameraManager.h"
 
@@ -15,7 +17,22 @@ ACameraTrigger::ACameraTrigger()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
-	TriggerBox->SetupAttachment(RootComponent);
+	RootComponent = TriggerBox;
+
+	SpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("SpawnPoint"));
+	SpawnPoint->SetupAttachment(TriggerBox);
+}
+
+void ACameraTrigger::OnTriggerSpawnNPC()
+{
+	if (SpawnedNPC || !GetWorld() || !NPCClass) return;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
+	/* Spawn NPC by NPSClass from BP */
+	SpawnedNPC = GetWorld()->SpawnActor<ACharacter>(NPCClass, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentRotation(), SpawnParams);
+	if (!SpawnedNPC) { UE_LOG(LogTemp, Error, TEXT("ACameraTrigger::OnTriggerSpawnNPC - Failed to spawn NPC")); }
 }
 
 // Called when the game starts or when spawned
