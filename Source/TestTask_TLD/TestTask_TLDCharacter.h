@@ -41,6 +41,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 
+	/** 2D Input Action */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* Move2DAction;
+
+	/** TopDown Input Action */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* MoveTopDownAction;
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LookAction;
@@ -48,6 +56,7 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
+
 
 public:
 
@@ -67,8 +76,12 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-public:
+	FVector SifuForwardAxis;
 
+	bool bIsInSifuMode = false;
+
+
+public:
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
@@ -84,6 +97,12 @@ public:
 	/** Handles jump pressed inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Move2D(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void MoveTopDown(const FInputActionValue& Value);
 
 public:
 

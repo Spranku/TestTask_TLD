@@ -7,7 +7,13 @@
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
 #include "TestTask_TLD.h"
+#include "ActorComponents/AC_CameraManager.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+
+ATestTask_TLDPlayerController::ATestTask_TLDPlayerController()
+{
+	CameraManager = CreateDefaultSubobject<UAC_CameraManager>(TEXT("CameraManager"));
+}
 
 void ATestTask_TLDPlayerController::BeginPlay()
 {
@@ -40,21 +46,12 @@ void ATestTask_TLDPlayerController::SetupInputComponent()
 	// only add IMCs for local player controllers
 	if (IsLocalPlayerController())
 	{
-		// Add Input Mapping Contexts
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		if (auto* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
-			for (UInputMappingContext* CurrentContext : DefaultMappingContexts)
+			if (DefaultMappingContext)
 			{
-				Subsystem->AddMappingContext(CurrentContext, 0);
-			}
-
-			// only add these IMCs if we're not using mobile touch input
-			if (!ShouldUseTouchControls())
-			{
-				for (UInputMappingContext* CurrentContext : MobileExcludedMappingContexts)
-				{
-					Subsystem->AddMappingContext(CurrentContext, 0);
-				}
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+				CurrentMappingContext = DefaultMappingContext;  
 			}
 		}
 	}
@@ -64,4 +61,35 @@ bool ATestTask_TLDPlayerController::ShouldUseTouchControls() const
 {
 	// are we on a mobile platform? Should we force touch?
 	return SVirtualJoystick::ShouldDisplayTouchInterface() || bForceTouchControls;
+}
+
+void ATestTask_TLDPlayerController::SwitchInputContext(EInputMode Mode)
+{
+	auto* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (!Subsystem) return;
+
+	/* Remove current */
+	if (CurrentMappingContext)
+	{
+		Subsystem->RemoveMappingContext(CurrentMappingContext);
+		CurrentMappingContext = nullptr;
+	}
+
+	/* Choice new input by mode */
+	TObjectPtr<UInputMappingContext> NewContext = nullptr;
+	switch (Mode)
+	{
+		case EInputMode::Default:  
+			NewContext = DefaultMappingContext;  break;
+		case EInputMode::Sifu:     
+			NewContext = SifuMappingContext;     break;
+		case EInputMode::TopDown:  
+			NewContext = TopDownMappingContext;  break;
+	}
+
+	if (NewContext)
+	{
+		Subsystem->AddMappingContext(NewContext, 0);
+		CurrentMappingContext = NewContext;
+	}
 }
