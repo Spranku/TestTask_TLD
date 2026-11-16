@@ -33,7 +33,7 @@ void UAC_CameraManager::SwitchToCamera(ACameraActor* NewTarget, float BlendTime,
 	if (!OwnerController) return;
 
 	/* Change camera by target */
-	OwnerController->SetViewTargetWithBlend(NewTarget, BlendTime, BlendFunc);
+	OwnerController->SetViewTargetWithBlend(NewTarget, BlendTime, BlendFunc, true);
 }
 
 

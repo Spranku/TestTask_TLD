@@ -61,6 +61,9 @@ void ATestTask_TLDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATestTask_TLDCharacter::Move);
+		EnhancedInputComponent->BindAction(Move2DAction, ETriggerEvent::Triggered, this, &ATestTask_TLDCharacter::Move2D);
+		EnhancedInputComponent->BindAction(MoveTopDownAction, ETriggerEvent::Triggered, this, &ATestTask_TLDCharacter::MoveTopDown);
+
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ATestTask_TLDCharacter::Look);
 
 		// Looking
@@ -130,4 +133,30 @@ void ATestTask_TLDCharacter::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void ATestTask_TLDCharacter::Move2D(const FInputActionValue& Value)
+{
+	float AxisValue = Value.Get<FVector2D>().X;
+	AddMovementInput(FVector::ForwardVector, AxisValue);
+}
+
+void ATestTask_TLDCharacter::MoveTopDown(const FInputActionValue& Value)
+{
+	auto Input = Value.Get<FVector2D>();
+
+	if (auto* PC = Cast<APlayerController>(Controller))
+	{
+		/* Get rotation of acrive top down cam */
+		FRotator CamRot = PC->PlayerCameraManager->GetCameraRotation();
+
+		/* Stay only Yaw */
+		FRotator YawRot(0.f, CamRot.Yaw, 0.f);
+
+		FVector Forward = FRotationMatrix(YawRot).GetUnitAxis(EAxis::X);
+		FVector Right = FRotationMatrix(YawRot).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(Forward, Input.Y);
+		AddMovementInput(Right, Input.X);
+	}
 }
