@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Camera/CameraActor.h"
+#include "Actors/CameraActorBase.h"
 #include "CameraActorSifu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TESTTASK_TLD_API ACameraActorSifu : public ACameraActor
+class TESTTASK_TLD_API ACameraActorSifu : public ACameraActorBase
 {
 	GENERATED_BODY()
 	
